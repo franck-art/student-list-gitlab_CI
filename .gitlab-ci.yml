@@ -1,0 +1,44 @@
+image: docker:stable
+
+stages:
+  - build image
+  - run image
+  - test image
+  - clean container
+  - push to docker hub
+
+
+docker build:
+  stage: build image
+  script:
+  - docker info
+  - docker build -t franckjunior/student-list:gitlab_ci  ./simple-api
+
+
+docker run:
+  stage: run image
+  script:
+  - docker rm -vf studient-list-api || echo "container already deleted"
+  - docker run -d --name=studient-list-api -p 5000:5000 franckjunior/student-list:gitlab-ci
+  - docker cp ${PWD}/simple-api/student_age.json  studient-list-api:/data/student_age.json
+
+
+docker test:
+  stage: test image
+  before_script:
+  - apk add --update curl python && rm -rf /var/cache/apk/*
+  script:
+  -  if [ "$(curl -u toto:python -X GET http://172.17.0.1:5000/pozos/api/v1.0/get_student_ages | python -c "import sys, json; print json.load(sys.stdin)['student_ages']['bob']")" = "13" ] && [ "$(curl -u toto:python -X GET http://172.17.0.1:5000/pozos/api/v1.0/get_student_ages | python -c "import sys, json; print json.load(sys.stdin)['student_ages']['alice']")" = "12" ]; then echo "test OK"; exit 0; else echo "test KO"; exit 1; fi 
+
+docker clean:
+  stage: clean container
+  script:
+  - docker rm -vf student-list-api
+
+docker push 
+  stage: push to docker hub
+  only:
+  - master
+  script:
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+  - docker push franckjunior/student-list-api:gitlab_ci
