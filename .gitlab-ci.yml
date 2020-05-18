@@ -33,7 +33,7 @@ docker test:
 docker clean:
   stage: clean container
   script:
-  - docker rm -vf student-list-api
+  - docker rm -vf studient-list-api
 
 docker push: 
   stage: push to docker hub
