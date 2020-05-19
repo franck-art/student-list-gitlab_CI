@@ -7,6 +7,7 @@ stages:
   - clean container
   - push to docker hub
 
+# Definition des job
 
 docker build:
   stage: build image
