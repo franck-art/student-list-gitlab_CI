@@ -12,14 +12,14 @@ docker build:
   stage: build image
   script:
   - docker info
-  - docker build -t franckjunior/student-list:gitlab_ci  ./simple_api
+  - docker build -t  student-list  ./simple_api
 
 
 docker run:
   stage: run image
   script:
   - docker rm -vf studient-list-api || echo "container already deleted"
-  - docker run -d --name=studient-list-api -p 5000:5000 franckjunior/student-list:gitlab_ci
+  - docker run -d --name=studient-list-api -p 5000:5000  student-list:gitlab_ci
   - docker cp ${PWD}/simple_api/student_age.json  studient-list-api:/data/student_age.json
 
 
@@ -41,4 +41,5 @@ docker push:
   - master
   script:
   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-  - docker push franckjunior/student-list-api:gitlab_ci
+  - docker tag   $DOCKER_USERNAME/student-list:gitlab_ci
+  - docker push   $DOCKER_USERNAME/student-list:gitlab_ci
