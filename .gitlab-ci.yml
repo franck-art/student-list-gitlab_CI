@@ -41,5 +41,5 @@ docker push:
   - master
   script:
   - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-  - docker tag   $DOCKER_USERNAME/student-list:gitlab_ci
+  - docker tag  student-list  $DOCKER_USERNAME/student-list:gitlab_ci
   - docker push   $DOCKER_USERNAME/student-list:gitlab_ci
